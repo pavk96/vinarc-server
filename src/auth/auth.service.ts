@@ -1,28 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entity/entities/User';
 import { UserService } from 'src/user/user.service';
 import { getConnection } from 'typeorm';
-const CryptoJS = require('crypto-js');
+import CryptoJS from 'crypto-js';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UserService,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(user_email: string): Promise<User> {
-    const user = await this.usersService.findUserByEmail(user_email);
+  async validateNaverUser(user_email: string): Promise<User> {
+    const user = await this.userService.findUserByEmail(user_email);
     if (!user) {
       return null;
+    }
+    return user;
+  }
+  async validateUser(user_id: string, user_password: string): Promise<User> {
+    const user: User = await this.userService.findUserById(user_id);
+    if (!user) {
+      throw new UnauthorizedException('이메일을 확인해주세요');
+    }
+    const isSamePassword: boolean = await bcrypt.compare(
+      user_password,
+      user.userPassword,
+    );
+    if (!isSamePassword) {
+      throw new UnauthorizedException('비밀번호를 확인해주세요');
     }
     return user;
   }
 
   async createLoginToken(user: User) {
     const payload = {
-      user_no: user.userId,
+      user_number: user.userNumber,
       user_token: 'loginToken',
     };
 
@@ -48,12 +63,7 @@ export class AuthService {
       process.env.AES_KEY,
     ).toString();
 
-    await getConnection()
-      .createQueryBuilder()
-      .update(User)
-      .set({ userRefreshToken: token })
-      .where(`user_id = "${user.userId}"`)
-      .execute();
+    this.userService.refreshUserToken(user, refresh_token);
     return refresh_token;
   }
 

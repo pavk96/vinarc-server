@@ -28,7 +28,7 @@ export class NaverStrategy extends PassportStrategy(Strategy) {
       user_provider,
     };
 
-    const user = await this.authService.validateUser(user_email);
+    const user = await this.authService.validateNaverUser(user_email);
     if (user === null) {
       // 유저가 없을때
       console.log('일회용 토큰 발급');
