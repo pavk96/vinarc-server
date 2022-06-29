@@ -23,14 +23,13 @@ export class Refund {
   @Column("timestamp", { name: "refund_date" })
   refundDate: Date;
 
-  @Column("varchar", {
+  @Column("tinyint", {
     name: "refund_state",
     comment:
       "0-환불 미승인(재배송) 1-환불접수 2-환불상품픽업 3-환불상품배송 4-환불상품확인 5-환불승인(환불완료) ",
-    length: 45,
     default: () => "'0'",
   })
-  refundState: string;
+  refundState: number;
 
   @ManyToOne(() => Order, (order) => order.refunds, {
     onDelete: "NO ACTION",

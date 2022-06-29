@@ -10,12 +10,12 @@ import { MappingProductWithColorAndMaterial } from "./MappingProductWithColorAnd
 import { MaterialStandard } from "./MaterialStandard";
 import { Product } from "./Product";
 
-@Index("fk_material_standard_has_product_product1_idx", ["productNumber"], {})
 @Index(
   "fk_material_standard_has_product_material_standard1_idx",
   ["materialId"],
   {}
 )
+@Index("fk_material_standard_has_product_product1_idx", ["productNumber"], {})
 @Entity("mapping_product_with_material", { schema: "vinarc" })
 export class MappingProductWithMaterial {
   @Column("int", { primary: true, name: "material_id" })

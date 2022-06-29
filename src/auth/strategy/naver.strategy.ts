@@ -19,6 +19,7 @@ export class NaverStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: any,
   ): Promise<any> {
+    console.log(profile);
     const user_email = profile._json.email;
     const user_nick = profile._json.nickname;
     const user_provider = profile.provider;

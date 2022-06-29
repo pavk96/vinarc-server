@@ -11,8 +11,8 @@ import { Order } from "./Order";
 import { Coupon } from "./Coupon";
 import { User } from "./User";
 
-@Index("fk_user_coupon_user1_idx", ["userUserNumber"], {})
 @Index("fk_user_coupon_coupon1_idx", ["couponCouponId"], {})
+@Index("fk_user_coupon_user1_idx", ["userUserNumber"], {})
 @Entity("user_coupon", { schema: "vinarc" })
 export class UserCoupon {
   @PrimaryGeneratedColumn({ type: "int", name: "user_coupon_id" })

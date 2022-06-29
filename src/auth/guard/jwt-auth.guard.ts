@@ -28,7 +28,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     const token = authorization.replace('Bearer ', '');
-    const tokenValidate = await this.validate(token);
+    const tokenValidate = await this.validateToken(token);
     if (tokenValidate.tokenReissue) {
       response.setHeader('access_token', tokenValidate.new_token);
       response.setHeader('tokenReissue', true);
@@ -39,7 +39,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return true;
   }
 
-  async validate(token: string) {
+  async validateToken(token: string) {
     try {
       // 토큰 검증
       const token_verify = await this.authService.tokenValidate(token);
@@ -96,7 +96,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
           throw new HttpException('토큰이 만료되었습니다.', 410);
 
         default:
-          throw new HttpException('서버 오류입니다.', 500);
+          throw new HttpException(error.message + ' 서버 오류입니다.', 500);
       }
     }
   }

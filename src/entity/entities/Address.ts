@@ -21,12 +21,12 @@ export class Address {
   })
   addressNickname: string;
 
-  @Column("bit", {
+  @Column("tinyint", {
     name: "address_state",
     comment: "0-구주소 1-신주소",
-    default: () => "'b'1''",
+    default: () => "'1'",
   })
-  addressState: boolean;
+  addressState: number;
 
   @Column("varchar", { name: "address_context", length: 45 })
   addressContext: string;

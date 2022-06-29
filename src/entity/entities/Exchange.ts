@@ -33,13 +33,12 @@ export class Exchange {
   @Column("timestamp", { name: "exchange_date" })
   exchangeDate: Date;
 
-  @Column("varchar", {
+  @Column("tinyint", {
     name: "exchange_state",
     comment:
       "0-교환 미승인(환불 또는 재배송) 1-교환접수 2-반품상품픽업 3-반품상품배송 4-반품상품확인 5-교환승인 6-교환상품픽업 7-교환상품배송 8-교환상품 배송완료(교환완료) ",
-    length: 45,
   })
-  exchangeState: string;
+  exchangeState: number;
 
   @Column("int", { primary: true, name: "product_product_number" })
   productProductNumber: number;

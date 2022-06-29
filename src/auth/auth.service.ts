@@ -23,7 +23,7 @@ export class AuthService {
   async validateUser(user_id: string, user_password: string): Promise<User> {
     const user: User = await this.userService.findUserById(user_id);
     if (!user) {
-      throw new UnauthorizedException('이메일을 확인해주세요');
+      throw new UnauthorizedException('아이디를 확인해주세요');
     }
     const isSamePassword: boolean = await bcrypt.compare(
       user_password,
@@ -58,13 +58,8 @@ export class AuthService {
       expiresIn: '50m',
     });
 
-    const refresh_token = CryptoJS.AES.encrypt(
-      JSON.stringify(token),
-      process.env.AES_KEY,
-    ).toString();
-
-    this.userService.refreshUserToken(user, refresh_token);
-    return refresh_token;
+    this.userService.refreshUserToken(user, token);
+    return token;
   }
 
   onceToken(user_profile: any) {
