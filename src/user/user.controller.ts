@@ -131,8 +131,24 @@ export class UserController {
   async registUser(@Body() registUserDTO: RegistUserDTO, @Res() res: Response) {
     try {
       //회원가입
+      res.setHeader('Access-Control-Expose-Headers', '*');
       await this.userService.insertUser(registUserDTO);
-      res.redirect('https://www.vinarc.co.kr/');
+      res.end();
+    } catch (error) {
+      res.json({
+        success: false,
+        message: error.sqlMessage || error.ErrorMessage,
+      });
+    }
+    // 그 외의 경우
+    return false;
+  }
+  @Post('signup')
+  async regist(@Body() registUserDTO: RegistUserDTO, @Res() res: Response) {
+    try {
+      //회원가입
+      res.setHeader('Access-Control-Expose-Headers', '*');
+      await this.userService.insertUser(registUserDTO);
       res.end();
     } catch (error) {
       res.json({

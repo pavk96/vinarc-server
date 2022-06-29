@@ -37,7 +37,7 @@ export class UserService {
   async findAllUserAddress(user_number: number) {
     const userAddress = await getConnection()
       .createQueryBuilder()
-      .select('address')
+      .select()
       .from(Address, 'address')
       .where('address.user_user_number = :user_user_number', {
         user_user_number: user_number,

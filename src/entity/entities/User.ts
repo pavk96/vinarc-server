@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  Index,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -15,13 +14,12 @@ import { Star } from "./Star";
 import { UserCoupon } from "./UserCoupon";
 import { UserLog } from "./UserLog";
 
-@Index("user_id_UNIQUE", ["userId"], { unique: true })
 @Entity("user", { schema: "vinarc" })
 export class User {
   @PrimaryGeneratedColumn({ type: "int", name: "user_number" })
   userNumber: number;
 
-  @Column("varchar", { name: "user_id", unique: true, length: 45 })
+  @Column("varchar", { name: "user_id", length: 45 })
   userId: string;
 
   @Column("varchar", { name: "user_password", length: 300 })
@@ -46,7 +44,7 @@ export class User {
   })
   userRefreshToken: string | null;
 
-  @OneToMany(() => Address, (address) => address.userUserNumber2)
+  @OneToMany(() => Address, (address) => address.userNumber2)
   addresses: Address[];
 
   @OneToMany(() => Cart, (cart) => cart.userNumber2)
@@ -64,7 +62,7 @@ export class User {
   @OneToMany(() => Star, (star) => star.userNumber2)
   stars: Star[];
 
-  @OneToMany(() => UserCoupon, (userCoupon) => userCoupon.userUserNumber2)
+  @OneToMany(() => UserCoupon, (userCoupon) => userCoupon.userNumber2)
   userCoupons: UserCoupon[];
 
   @OneToOne(() => UserLog, (userLog) => userLog.userNumber2)

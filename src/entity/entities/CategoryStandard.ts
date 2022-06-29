@@ -15,6 +15,9 @@ export class CategoryStandard {
   @Column("varchar", { name: "category_name", length: 45 })
   categoryName: string;
 
+  @Column("varchar", { name: "category_icon_url", length: 45 })
+  categoryIconUrl: string;
+
   @ManyToMany(() => Product, (product) => product.categoryStandards)
   @JoinTable({
     name: "product_has_category_standard",

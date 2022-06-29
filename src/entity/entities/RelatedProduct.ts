@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Product } from "./Product";
 
 @Index("fk_product_has_displayed_product_product1_idx", ["productNumber"], {})
@@ -14,7 +7,11 @@ export class RelatedProduct {
   @Column("int", { name: "product_number" })
   productNumber: number;
 
-  @PrimaryGeneratedColumn({ type: "int", name: "related_product_id" })
+  @Column("int", {
+    primary: true,
+    name: "related_product_id",
+    comment: "정렬 순서",
+  })
   relatedProductId: number;
 
   @ManyToOne(() => Product, (product) => product.relatedProducts, {

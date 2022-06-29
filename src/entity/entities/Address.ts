@@ -8,11 +8,14 @@ import {
 } from "typeorm";
 import { User } from "./User";
 
-@Index("fk_address_user1_idx", ["userUserNumber"], {})
+@Index("fk_address_user1_idx", ["userNumber"], {})
 @Entity("address", { schema: "vinarc" })
 export class Address {
   @PrimaryGeneratedColumn({ type: "int", name: "address_id" })
   addressId: number;
+
+  @Column("int", { primary: true, name: "user_number" })
+  userNumber: number;
 
   @Column("varchar", {
     name: "address_nickname",
@@ -37,15 +40,10 @@ export class Address {
   @Column("varchar", { name: "address_receiver_phone_number", length: 45 })
   addressReceiverPhoneNumber: string;
 
-  @Column("int", { primary: true, name: "user_user_number" })
-  userUserNumber: number;
-
   @ManyToOne(() => User, (user) => user.addresses, {
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
   })
-  @JoinColumn([
-    { name: "user_user_number", referencedColumnName: "userNumber" },
-  ])
-  userUserNumber2: User;
+  @JoinColumn([{ name: "user_number", referencedColumnName: "userNumber" }])
+  userNumber2: User;
 }

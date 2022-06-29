@@ -8,17 +8,17 @@ import {
 } from "typeorm";
 import { Order } from "./Order";
 
-@Index("fk_refund_order1_idx", ["orderIdorder", "orderUserNumber"], {})
+@Index("fk_refund_order1_idx", ["orderId", "userNumber"], {})
 @Entity("refund", { schema: "vinarc" })
 export class Refund {
   @PrimaryGeneratedColumn({ type: "int", name: "refund_id" })
   refundId: number;
 
-  @Column("int", { primary: true, name: "order_idorder" })
-  orderIdorder: number;
+  @Column("int", { primary: true, name: "order_id" })
+  orderId: number;
 
-  @Column("int", { primary: true, name: "order_user_number" })
-  orderUserNumber: number;
+  @Column("int", { primary: true, name: "user_number" })
+  userNumber: number;
 
   @Column("timestamp", { name: "refund_date" })
   refundDate: Date;
@@ -36,8 +36,8 @@ export class Refund {
     onUpdate: "NO ACTION",
   })
   @JoinColumn([
-    { name: "order_idorder", referencedColumnName: "idorder" },
-    { name: "order_user_number", referencedColumnName: "userNumber" },
+    { name: "order_id", referencedColumnName: "orderId" },
+    { name: "user_number", referencedColumnName: "userNumber" },
   ])
   order: Order;
 }

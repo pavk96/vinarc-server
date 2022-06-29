@@ -1,21 +1,18 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { UserCoupon } from "./UserCoupon";
+import { Column, Entity } from "typeorm";
 
 @Entity("coupon", { schema: "vinarc" })
 export class Coupon {
-  @PrimaryGeneratedColumn({ type: "int", name: "coupon_id" })
+  @Column("int", { primary: true, name: "coupon_id" })
   couponId: number;
 
-  @Column("varchar", { name: "coupon_name", length: 45 })
-  couponName: string;
+  @Column("varchar", { name: "coupon_name", nullable: true, length: 45 })
+  couponName: string | null;
 
   @Column("varchar", {
     name: "coupon_key",
+    nullable: true,
     comment: "사용자가 등록 시에 입력해야하는 쿠폰 키",
     length: 45,
   })
-  couponKey: string;
-
-  @OneToMany(() => UserCoupon, (userCoupon) => userCoupon.couponCoupon)
-  userCoupons: UserCoupon[];
+  couponKey: string | null;
 }

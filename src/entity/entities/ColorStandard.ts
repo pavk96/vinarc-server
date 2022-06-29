@@ -1,18 +1,17 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { MappingProductWithColorAndMaterial } from "./MappingProductWithColorAndMaterial";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { MappingColorWithMaterial } from './MappingColorWithMaterial';
 
-@Entity("color_standard", { schema: "vinarc" })
+@Entity('color_standard', { schema: 'vinarc' })
 export class ColorStandard {
-  @PrimaryGeneratedColumn({ type: "int", name: "idcolor" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'idcolor' })
   idcolor: number;
 
-  @Column("varchar", { name: "color_name", length: 45 })
+  @Column('varchar', { name: 'color_name', length: 45 })
   colorName: string;
 
   @OneToMany(
-    () => MappingProductWithColorAndMaterial,
-    (mappingProductWithColorAndMaterial) =>
-      mappingProductWithColorAndMaterial.color
+    () => MappingColorWithMaterial,
+    (mappingColorWithMaterial) => mappingColorWithMaterial.color,
   )
-  mappingProductWithColorAndMaterials: MappingProductWithColorAndMaterial[];
+  mappingColorWithMaterials: MappingColorWithMaterial[];
 }

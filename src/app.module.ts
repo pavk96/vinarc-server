@@ -7,6 +7,9 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entity/entities/User';
+import { ProductModule } from './product/product.module';
+import { Product } from './entity/entities/Product';
+import { ProductService } from './product/product.service';
 
 @Module({
   imports: [
@@ -33,12 +36,13 @@ import { User } from './entity/entities/User';
       logging: true,
       keepConnectionAlive: true,
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Product]),
     UserModule,
     AuthModule,
+    ProductModule,
   ],
 
   controllers: [AppController],
-  providers: [AppService, UserService],
+  providers: [AppService, UserService, ProductService],
 })
 export class AppModule {}
