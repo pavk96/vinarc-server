@@ -13,12 +13,12 @@ import { UserCoupon } from "./UserCoupon";
 import { OrderedProduct } from "./OrderedProduct";
 import { Refund } from "./Refund";
 
+@Index("fk_order_user_coupon1_idx", ["userCouponId"], {})
 @Index("fk_order_user_idx", ["userNumber"], {})
-@Index("fk_order_user_coupon1_idx", ["userCouponCouponId"], {})
 @Entity("order", { schema: "vinarc" })
 export class Order {
-  @PrimaryGeneratedColumn({ type: "int", name: "idorder" })
-  idorder: number;
+  @PrimaryGeneratedColumn({ type: "int", name: "order_id" })
+  orderId: number;
 
   @Column("int", { primary: true, name: "user_number" })
   userNumber: number;
@@ -33,8 +33,8 @@ export class Order {
   })
   orderState: number;
 
-  @Column("int", { primary: true, name: "user_coupon_coupon_id" })
-  userCouponCouponId: number;
+  @Column("int", { primary: true, name: "user_coupon_id" })
+  userCouponId: number;
 
   @Column("datetime", {
     name: "last_modify_date",
@@ -56,10 +56,8 @@ export class Order {
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
   })
-  @JoinColumn([
-    { name: "user_coupon_coupon_id", referencedColumnName: "userCouponId" },
-  ])
-  userCouponCoupon: UserCoupon;
+  @JoinColumn([{ name: "user_coupon_id", referencedColumnName: "couponId" }])
+  userCoupon: UserCoupon;
 
   @OneToMany(() => OrderedProduct, (orderedProduct) => orderedProduct.order)
   orderedProducts: OrderedProduct[];

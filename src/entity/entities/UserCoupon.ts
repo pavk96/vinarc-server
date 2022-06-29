@@ -8,45 +8,31 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Order } from "./Order";
-import { Coupon } from "./Coupon";
 import { User } from "./User";
 
-@Index("fk_user_coupon_user1_idx", ["userUserNumber"], {})
-@Index("fk_user_coupon_coupon1_idx", ["couponCouponId"], {})
+@Index("fk_user_coupon_user1_idx", ["userNumber"], {})
 @Entity("user_coupon", { schema: "vinarc" })
 export class UserCoupon {
-  @PrimaryGeneratedColumn({ type: "int", name: "user_coupon_id" })
-  userCouponId: number;
+  @PrimaryGeneratedColumn({ type: "int", name: "coupon_id" })
+  couponId: number;
 
-  @Column("bit", {
+  @Column("tinyint", {
     name: "user_coupon_state",
-    nullable: true,
     comment: "0-미사용 1-사용",
+    default: () => "'0'",
   })
-  userCouponState: boolean | null;
+  userCouponState: number;
 
-  @Column("int", { primary: true, name: "user_user_number" })
-  userUserNumber: number;
+  @Column("int", { primary: true, name: "user_number" })
+  userNumber: number;
 
-  @Column("int", { primary: true, name: "coupon_coupon_id" })
-  couponCouponId: number;
-
-  @OneToMany(() => Order, (order) => order.userCouponCoupon)
+  @OneToMany(() => Order, (order) => order.userCoupon)
   orders: Order[];
-
-  @ManyToOne(() => Coupon, (coupon) => coupon.userCoupons, {
-    onDelete: "NO ACTION",
-    onUpdate: "NO ACTION",
-  })
-  @JoinColumn([{ name: "coupon_coupon_id", referencedColumnName: "couponId" }])
-  couponCoupon: Coupon;
 
   @ManyToOne(() => User, (user) => user.userCoupons, {
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
   })
-  @JoinColumn([
-    { name: "user_user_number", referencedColumnName: "userNumber" },
-  ])
-  userUserNumber2: User;
+  @JoinColumn([{ name: "user_number", referencedColumnName: "userNumber" }])
+  userNumber2: User;
 }

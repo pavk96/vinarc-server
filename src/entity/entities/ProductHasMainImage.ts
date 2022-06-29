@@ -12,10 +12,10 @@ export class ProductHasMainImage {
   @Column("int", { primary: true, name: "main_image_id" })
   mainImageId: number;
 
-  @Column("double", { name: "coordinate_x", precision: 22 })
+  @Column("double", { name: "coordinate-x", precision: 22 })
   coordinateX: number;
 
-  @Column("double", { name: "coordinate_y", precision: 22 })
+  @Column("double", { name: "coordinate-y", precision: 22 })
   coordinateY: number;
 
   @ManyToOne(() => MainImage, (mainImage) => mainImage.productHasMainImages, {

@@ -1,34 +1,33 @@
 import {
   ApiTags,
   ApiOperation,
-  ApiBearerAuth,
   ApiResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import { AuthService } from '../auth/auth.service';
 import { NaverAuthGuard } from 'src/auth/guard/navar-auth.guard';
 import {
   Body,
   Controller,
   Get,
-  Param,
+  HttpException,
   Query,
   Req,
   Request,
   Res,
   UseGuards,
+  Post,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { Post } from '@nestjs/common';
-import { getConnection } from 'typeorm';
-import { User } from 'src/entity/entities/User';
+import { AuthService } from '../auth/auth.service';
+import { UserService } from './user.service';
 import { JwtRefreshGuard } from 'src/auth/guard/jwt-refreshToken-auth.guard';
 import { RegistUserDTO } from './dto/registUser.dto';
-import { UserService } from './user.service';
-import ChangeUserProfileDTO from './dto/changeUserProfile.dto';
+import { ChangeUserProfileDTO } from './dto/changeUserProfile.dto';
 import { LoginUserDTO } from './dto/loginUser.dto';
+import { CreateAddressDTO } from './dto/createAddress.dto';
+import { UpdateAddressDTO } from './dto/updateAddress.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -55,14 +54,18 @@ export class UserController {
   @UseGuards(NaverAuthGuard)
   @Get('auth/naver/callback')
   async callback(@Req() req, @Res() res: Response): Promise<any> {
-    console.log(req, res);
     if (req.user.type === 'login') {
       res.cookie('access_token', req.user.access_token);
       res.cookie('refresh_token', req.user.refresh_token);
     } else {
+      //유저가 없을 경우 회원가입을 통해 id랑 pwd 그 외의 정보(휴대폰,생일)
       res.cookie('once_token', req.user.once_token);
+      if (req.headers) console.log(req.headers['user-agent'].toString());
+      //어떻게 다시 돌아갈까? 플랫폼을 어떻게 나눌까?
+      res.redirect('https://vinarc.page.link/4Yif');
+      // res.redirect('vinarc://');
     }
-    res.redirect('http://www.vinarc.co.kr/');
+
     res.end();
     // 리다이렉트 해주는 페이지
   }
@@ -85,11 +88,7 @@ export class UserController {
   })
   // @UseGuards(JwtAuthGuard)
   @Post('auth/login')
-  async loginUser(
-    @Request() req: any,
-    @Body() loginUserDTO: LoginUserDTO,
-    @Res() res: Response,
-  ) {
+  async loginUser(@Body() loginUserDTO: LoginUserDTO, @Res() res: Response) {
     try {
       //로그인
       const { userId, userPassword } = loginUserDTO;
@@ -97,10 +96,11 @@ export class UserController {
       const access_token = await this.authService.createLoginToken(user);
       const refresh_token = await this.authService.createRefreshToken(user);
 
-      res.setHeader('access_token', access_token);
+      res.setHeader('Access_token', access_token);
       res.setHeader('refresh_token', refresh_token);
+      res.setHeader('Access-Control-Expose-Headers', '*');
+      // res.redirect('http://www.vinarc.co.kr/');
       res.json({ success: true, message: 'user login successful' });
-      res.redirect('http://www.vinarc.co.kr/');
       res.end();
     } catch (error) {
       console.log(error);
@@ -126,30 +126,35 @@ export class UserController {
     status: 401,
     description: '토큰 에러',
   })
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('auth/signup')
-  async registUser(
-    @Request() req: any,
-    @Body() registUserDTO: RegistUserDTO,
-    @Res() res: Response,
-  ) {
+  async registUser(@Body() registUserDTO: RegistUserDTO, @Res() res: Response) {
     try {
       //회원가입
-      const { userEmail, userPassword } = registUserDTO;
-      this.userService.insertUser(registUserDTO);
-
-      //로그인
-      const user = await this.authService.validateUser(userEmail, userPassword);
-      const access_token = await this.authService.createLoginToken(user);
-      const refresh_token = await this.authService.createRefreshToken(user);
-
-      res.setHeader('access_token', access_token);
-      res.setHeader('refresh_token', refresh_token);
-      res.json({ success: true, message: 'user login successful' });
-      res.redirect('http://www.vinarc.co.kr/');
+      res.setHeader('Access-Control-Expose-Headers', '*');
+      await this.userService.insertUser(registUserDTO);
       res.end();
     } catch (error) {
-      console.log(error);
+      res.json({
+        success: false,
+        message: error.sqlMessage || error.ErrorMessage,
+      });
+    }
+    // 그 외의 경우
+    return false;
+  }
+  @Post('signup')
+  async regist(@Body() registUserDTO: RegistUserDTO, @Res() res: Response) {
+    try {
+      //회원가입
+      res.setHeader('Access-Control-Expose-Headers', '*');
+      await this.userService.insertUser(registUserDTO);
+      res.end();
+    } catch (error) {
+      res.json({
+        success: false,
+        message: error.sqlMessage || error.ErrorMessage,
+      });
     }
     // 그 외의 경우
     return false;
@@ -163,6 +168,7 @@ export class UserController {
     }
     return { success: false, message: '이미 등록된 아이디입니다.' };
   }
+
   // 리프레쉬 토큰을 이용한 엑세스 토큰 재발급하기
   @UseGuards(JwtRefreshGuard)
   @Get('auth/refresh-accesstoken')
@@ -170,18 +176,74 @@ export class UserController {
     return { success: true, message: 'new accessToken Issuance success' };
   }
 
-  @Post('')
-  async changeUserProfile(
-    @Req() req: any,
-    @Body() changeUserProfileDTO: ChangeUserProfileDTO,
-  ) {
-    try {
-      const { authorization } = req.headers;
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getUserProfile(@Req() req: any) {
+    const token = req.headers.authorization;
+    const tokenContent = await this.authService.tokenValidate(token);
+    const { user_number } = tokenContent;
 
-      const token = authorization.replace('Bearer ', '');
-      this.userService.updateUserDiv(changeUserProfileDTO, token);
-    } catch (error) {
-      console.log(error);
+    const user = await this.userService.findUserByNumber(user_number);
+    console.log(user);
+    if (!user) {
+      throw new HttpException('없는 아이디입니다.', 404);
     }
+    return user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('profile/update')
+  async changeUserProfile(
+    @Body() changeUserProfileDTO: ChangeUserProfileDTO,
+    @Req() req: any,
+  ) {
+    const token = req.headers.authorization;
+    const tokenContent = await this.authService.tokenValidate(token);
+    const { user_number } = tokenContent;
+    await this.userService.updateUserDiv(changeUserProfileDTO, user_number);
+    return this.userService.findUserByNumber(user_number);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('address/delete')
+  async deleteUserAddress(@Query('address_id') address_id: number) {
+    return await this.userService.deleteUserAddress(address_id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('address/update')
+  async updateAddress(
+    @Body() updateAddressDTO: UpdateAddressDTO,
+    @Req() req: any,
+  ) {
+    const token = req.headers.authorization;
+    const tokenContent = await this.authService.tokenValidate(token);
+    const { user_number } = tokenContent;
+    await this.userService.updateAddress(updateAddressDTO, user_number);
+    return this.userService.findAllUserAddress(user_number);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post('address/create')
+  async createAddress(
+    @Body() createAddressDTO: CreateAddressDTO,
+    @Req() req: any,
+  ) {
+    const token = req.headers.authorization;
+    const tokenContent = await this.authService.tokenValidate(token);
+    const { user_number } = tokenContent;
+    await this.userService.createAddress(createAddressDTO, user_number);
+    return this.userService.findAllUserAddress(user_number);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('address')
+  async getUserAddress(@Req() req: any) {
+    const token = req.headers.authorization;
+    const tokenContent = await this.authService.tokenValidate(token);
+    const { user_number } = tokenContent;
+    const address = await this.userService.findAllUserAddress(user_number);
+    if (!address) {
+      return { message: '주소가 없어요' };
+    }
+    return address;
   }
 }

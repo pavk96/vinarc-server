@@ -9,14 +9,10 @@ import {
 import { Order } from "./Order";
 import { Product } from "./Product";
 
-@Index("fk_exchange_order1_idx", ["orderIdorder", "orderUserNumber"], {})
+@Index("fk_exchange_order1_idx", ["orderId", "userNumber"], {})
 @Index(
   "fk_exchange_product1_idx",
-  [
-    "productProductNumber",
-    "productColorStandardIdcolor",
-    "productMaterialStandardIdmaterial",
-  ],
+  ["productNumber", "productColorId", "productMaterialId"],
   {}
 )
 @Entity("exchange", { schema: "vinarc" })
@@ -24,11 +20,11 @@ export class Exchange {
   @PrimaryGeneratedColumn({ type: "int", name: "exchange_id" })
   exchangeId: number;
 
-  @Column("int", { primary: true, name: "order_idorder" })
-  orderIdorder: number;
+  @Column("int", { primary: true, name: "order_id" })
+  orderId: number;
 
-  @Column("int", { primary: true, name: "order_user_number" })
-  orderUserNumber: number;
+  @Column("int", { primary: true, name: "user_number" })
+  userNumber: number;
 
   @Column("timestamp", { name: "exchange_date" })
   exchangeDate: Date;
@@ -41,25 +37,22 @@ export class Exchange {
   })
   exchangeState: string;
 
-  @Column("int", { primary: true, name: "product_product_number" })
-  productProductNumber: number;
+  @Column("int", { primary: true, name: "product_number" })
+  productNumber: number;
 
-  @Column("int", { primary: true, name: "product_color_standard_idcolor" })
-  productColorStandardIdcolor: number;
+  @Column("int", { primary: true, name: "product_color_id" })
+  productColorId: number;
 
-  @Column("int", {
-    primary: true,
-    name: "product_material_standard_idmaterial",
-  })
-  productMaterialStandardIdmaterial: number;
+  @Column("int", { primary: true, name: "product_material_id" })
+  productMaterialId: number;
 
   @ManyToOne(() => Order, (order) => order.exchanges, {
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
   })
   @JoinColumn([
-    { name: "order_idorder", referencedColumnName: "idorder" },
-    { name: "order_user_number", referencedColumnName: "userNumber" },
+    { name: "order_id", referencedColumnName: "orderId" },
+    { name: "user_number", referencedColumnName: "userNumber" },
   ])
   order: Order;
 
@@ -68,7 +61,7 @@ export class Exchange {
     onUpdate: "NO ACTION",
   })
   @JoinColumn([
-    { name: "product_product_number", referencedColumnName: "productNumber" },
+    { name: "product_number", referencedColumnName: "productNumber" },
   ])
-  productProductNumber2: Product;
+  productNumber2: Product;
 }

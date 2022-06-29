@@ -1,19 +1,75 @@
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/entity/entities/User';
 import { getConnection } from 'typeorm';
-import changeUserProfileDto from './dto/changeUserProfile.dto';
 import { RegistUserDTO } from './dto/registUser.dto';
 import * as bcrypt from 'bcrypt';
+import { ChangeUserProfileDTO } from './dto/changeUserProfile.dto';
+import { CreateAddressDTO } from './dto/createAddress.dto';
+import { Address } from 'src/entity/entities/Address';
+import { UpdateAddressDTO } from './dto/updateAddress.dto';
 
 @Injectable()
 export class UserService {
-  updateUserDiv(changeUserProfileDTO: changeUserProfileDto, token) {
-    const { division, value, userNumber } = changeUserProfileDTO;
-    getConnection()
+  async deleteUserAddress(address_id: number) {
+    await getConnection()
       .createQueryBuilder()
-      .update()
-      .setParameter(division, value)
-      .where('user.user_number=:user_number', { user_number: userNumber });
+      .delete()
+      .from(Address)
+      .where('address.address_id = :address_id', { address_id: address_id })
+      .execute();
+  }
+  async updateAddress(updateAddressDTO: UpdateAddressDTO, user_number: any) {
+    const values = { ...updateAddressDTO, userUserNumber: user_number };
+    const updatedUserAddress = await getConnection()
+      .createQueryBuilder()
+      .update(Address)
+      .set(values)
+      .where('address.user_user_number = :user_user_number', {
+        user_user_number: user_number,
+      })
+      .andWhere('address.address_id = :address_id', {
+        address_id: updateAddressDTO.addressId,
+      })
+      .execute();
+    console.log(updatedUserAddress);
+    return updatedUserAddress;
+  }
+  async findAllUserAddress(user_number: number) {
+    const userAddress = await getConnection()
+      .createQueryBuilder()
+      .select()
+      .from(Address, 'address')
+      .where('address.user_user_number = :user_user_number', {
+        user_user_number: user_number,
+      })
+      .getRawMany();
+    console.log(userAddress);
+    return userAddress;
+  }
+  async createAddress(createAddressDTO: CreateAddressDTO, user_number: number) {
+    const values = { ...createAddressDTO, userUserNumber: user_number };
+    console.log(values);
+    await getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(Address)
+      .values(values)
+      .execute();
+  }
+  async updateUserDiv(
+    changeUserProfileDTO: ChangeUserProfileDTO,
+    user_number: number,
+  ) {
+    const { division, value } = changeUserProfileDTO;
+    const updateSet = {};
+    updateSet[division] = value;
+
+    await getConnection()
+      .createQueryBuilder()
+      .update(User)
+      .set(updateSet)
+      .where('user.user_number=:user_number', { user_number: user_number })
+      .execute();
   }
   async insertUser(registUserDTO: RegistUserDTO) {
     const { userId, userEmail, userName, userPhone, userBirth, userPassword } =

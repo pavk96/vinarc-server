@@ -6,9 +6,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { Cart } from "./Cart";
 import { DetailImage } from "./DetailImage";
 import { Exchange } from "./Exchange";
-import { MappingProductWithMaterial } from "./MappingProductWithMaterial";
+import { MappingMaterialWithProduct } from "./MappingMaterialWithProduct";
+import { OrderedProduct } from "./OrderedProduct";
 import { PopularProduct } from "./PopularProduct";
 import { ProductDetail } from "./ProductDetail";
 import { CategoryStandard } from "./CategoryStandard";
@@ -46,17 +48,29 @@ export class Product {
   @Column("int", { name: "product_class" })
   productClass: number;
 
+  @Column("varchar", { name: "product_thumnail_url", length: 45 })
+  productThumnailUrl: string;
+
+  @OneToMany(() => Cart, (cart) => cart.productNumber2)
+  carts: Cart[];
+
   @OneToMany(() => DetailImage, (detailImage) => detailImage.productNumber2)
   detailImages: DetailImage[];
 
-  @OneToMany(() => Exchange, (exchange) => exchange.productProductNumber2)
+  @OneToMany(() => Exchange, (exchange) => exchange.productNumber2)
   exchanges: Exchange[];
 
   @OneToMany(
-    () => MappingProductWithMaterial,
-    (mappingProductWithMaterial) => mappingProductWithMaterial.productNumber2
+    () => MappingMaterialWithProduct,
+    (mappingMaterialWithProduct) => mappingMaterialWithProduct.productNumber2
   )
-  mappingProductWithMaterials: MappingProductWithMaterial[];
+  mappingMaterialWithProducts: MappingMaterialWithProduct[];
+
+  @OneToMany(
+    () => OrderedProduct,
+    (orderedProduct) => orderedProduct.productNumber2
+  )
+  orderedProducts: OrderedProduct[];
 
   @OneToMany(
     () => PopularProduct,

@@ -1,11 +1,11 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { MappingProductWithColorAndMaterial } from "./MappingProductWithColorAndMaterial";
+import { Product } from "./Product";
 import { Order } from "./Order";
 
 @Index("fk_order_has_product_has_material_standard_order1_idx", ["orderId"], {})
 @Index(
-  "fk_ordered_product_mapping_product_with_color_and_material1_idx",
-  ["materialId", "productNumber", "colorId"],
+  "fk_ordered_product_product1_idx",
+  ["productNumber", "productColorId", "productMaterialId"],
   {}
 )
 @Entity("ordered_product", { schema: "vinarc" })
@@ -23,32 +23,28 @@ export class OrderedProduct {
   })
   orderedProductDeliveryTrackingNumber: string | null;
 
-  @Column("int", { primary: true, name: "material_id" })
-  materialId: number;
-
   @Column("int", { primary: true, name: "product_number" })
   productNumber: number;
 
-  @Column("int", { primary: true, name: "color_id" })
-  colorId: number;
+  @Column("int", { primary: true, name: "product_color_id" })
+  productColorId: number;
 
-  @ManyToOne(
-    () => MappingProductWithColorAndMaterial,
-    (mappingProductWithColorAndMaterial) =>
-      mappingProductWithColorAndMaterial.orderedProducts,
-    { onDelete: "NO ACTION", onUpdate: "NO ACTION" }
-  )
+  @Column("int", { primary: true, name: "product_material_id" })
+  productMaterialId: number;
+
+  @ManyToOne(() => Product, (product) => product.orderedProducts, {
+    onDelete: "NO ACTION",
+    onUpdate: "NO ACTION",
+  })
   @JoinColumn([
-    { name: "material_id", referencedColumnName: "materialId" },
     { name: "product_number", referencedColumnName: "productNumber" },
-    { name: "color_id", referencedColumnName: "colorId" },
   ])
-  mappingProductWithColorAndMaterial: MappingProductWithColorAndMaterial;
+  productNumber2: Product;
 
   @ManyToOne(() => Order, (order) => order.orderedProducts, {
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
   })
-  @JoinColumn([{ name: "order_id", referencedColumnName: "idorder" }])
+  @JoinColumn([{ name: "order_id", referencedColumnName: "orderId" }])
   order: Order;
 }

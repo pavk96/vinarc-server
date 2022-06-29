@@ -6,18 +6,18 @@ import {
   ManyToOne,
   OneToMany,
 } from "typeorm";
-import { MappingProductWithColorAndMaterial } from "./MappingProductWithColorAndMaterial";
+import { MappingColorWithMaterial } from "./MappingColorWithMaterial";
 import { MaterialStandard } from "./MaterialStandard";
 import { Product } from "./Product";
 
-@Index("fk_material_standard_has_product_product1_idx", ["productNumber"], {})
 @Index(
   "fk_material_standard_has_product_material_standard1_idx",
   ["materialId"],
   {}
 )
-@Entity("mapping_product_with_material", { schema: "vinarc" })
-export class MappingProductWithMaterial {
+@Index("fk_material_standard_has_product_product1_idx", ["productNumber"], {})
+@Entity("mapping_material_with_product", { schema: "vinarc" })
+export class MappingMaterialWithProduct {
   @Column("int", { primary: true, name: "material_id" })
   materialId: number;
 
@@ -25,21 +25,21 @@ export class MappingProductWithMaterial {
   productNumber: number;
 
   @OneToMany(
-    () => MappingProductWithColorAndMaterial,
-    (mappingProductWithColorAndMaterial) =>
-      mappingProductWithColorAndMaterial.mappingProductWithMaterial
+    () => MappingColorWithMaterial,
+    (mappingColorWithMaterial) =>
+      mappingColorWithMaterial.mappingMaterialWithProduct
   )
-  mappingProductWithColorAndMaterials: MappingProductWithColorAndMaterial[];
+  mappingColorWithMaterials: MappingColorWithMaterial[];
 
   @ManyToOne(
     () => MaterialStandard,
-    (materialStandard) => materialStandard.mappingProductWithMaterials,
+    (materialStandard) => materialStandard.mappingMaterialWithProducts,
     { onDelete: "NO ACTION", onUpdate: "NO ACTION" }
   )
   @JoinColumn([{ name: "material_id", referencedColumnName: "materialId" }])
   material: MaterialStandard;
 
-  @ManyToOne(() => Product, (product) => product.mappingProductWithMaterials, {
+  @ManyToOne(() => Product, (product) => product.mappingMaterialWithProducts, {
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
   })

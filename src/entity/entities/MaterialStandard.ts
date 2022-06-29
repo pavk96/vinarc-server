@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { MappingProductWithMaterial } from "./MappingProductWithMaterial";
+import { MappingMaterialWithProduct } from "./MappingMaterialWithProduct";
 
 @Entity("material_standard", { schema: "vinarc" })
 export class MaterialStandard {
@@ -10,8 +10,8 @@ export class MaterialStandard {
   materialName: string;
 
   @OneToMany(
-    () => MappingProductWithMaterial,
-    (mappingProductWithMaterial) => mappingProductWithMaterial.material
+    () => MappingMaterialWithProduct,
+    (mappingMaterialWithProduct) => mappingMaterialWithProduct.material
   )
-  mappingProductWithMaterials: MappingProductWithMaterial[];
+  mappingMaterialWithProducts: MappingMaterialWithProduct[];
 }
