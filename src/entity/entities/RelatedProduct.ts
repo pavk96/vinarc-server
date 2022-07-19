@@ -9,10 +9,10 @@ export class RelatedProduct {
 
   @Column("int", {
     primary: true,
-    name: "related_product_id",
+    name: "related_product_number",
     comment: "정렬 순서",
   })
-  relatedProductId: number;
+  relatedProductNumber: number;
 
   @ManyToOne(() => Product, (product) => product.relatedProducts, {
     onDelete: "NO ACTION",

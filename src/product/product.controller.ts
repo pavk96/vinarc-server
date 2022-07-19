@@ -49,7 +49,7 @@ export class ProductController {
   }
 
   @Get()
-  async getOneProductDetail(
+  async getOneProduct(
     @Req() req: any,
     @Query('productNumber') product_number: number,
   ) {
@@ -64,6 +64,33 @@ export class ProductController {
     );
     console.log(related_product);
     return related_product;
+  }
+  @Get('review')
+  async getProductReview(@Query('productNumber') product_number: number) {
+    const product_review = await this.productService.findProductReview(
+      product_number,
+    );
+    console.log(product_review);
+    return product_review;
+  }
+  @Get('qna')
+  async getProductQna(@Query('productNumber') product_number: number) {
+    const product_review = await this.productService.findProductQna(
+      product_number,
+    );
+    console.log(product_review);
+    return product_review;
+  }
+  @Get('detail')
+  async getOneProductDetail(
+    @Req() req: any,
+    @Query('productNumber') product_number: number,
+  ) {
+    console.log(product_number);
+    const productDetail = await this.productService.findOneProductDetail(
+      product_number,
+    );
+    return productDetail;
   }
   @Get('detail/image')
   async getOneProductDetailImage(

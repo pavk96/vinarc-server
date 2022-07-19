@@ -10,6 +10,7 @@ import { User } from './entity/entities/User';
 import { ProductModule } from './product/product.module';
 import { Product } from './entity/entities/Product';
 import { ProductService } from './product/product.service';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ProductService } from './product/product.service';
     UserModule,
     AuthModule,
     ProductModule,
+    OrderModule,
   ],
 
   controllers: [AppController],

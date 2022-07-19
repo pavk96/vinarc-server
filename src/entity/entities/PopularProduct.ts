@@ -9,10 +9,10 @@ export class PopularProduct {
 
   @Column("int", {
     primary: true,
-    name: "popular_product_id",
+    name: "popular_product_number",
     comment: "정렬 순서",
   })
-  popularProductId: number;
+  popularProductNumber: number;
 
   @ManyToOne(() => Product, (product) => product.popularProducts, {
     onDelete: "NO ACTION",

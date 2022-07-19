@@ -1,23 +1,50 @@
 import { Injectable } from '@nestjs/common';
-import { Category } from 'src/entity/entities/Category';
+import { ProductMaterialAndColor } from 'src/entity/entities/ProductMaterialAndColor';
 import { CategoryStandard } from 'src/entity/entities/CategoryStandard';
-import { ColorStandard } from 'src/entity/entities/ColorStandard';
 import { DetailImage } from 'src/entity/entities/DetailImage';
-import { MappingColorWithMaterial } from 'src/entity/entities/MappingColorWithMaterial';
-import { MappingMaterialWithProduct } from 'src/entity/entities/MappingMaterialWithProduct';
-import { MaterialStandard } from 'src/entity/entities/MaterialStandard';
 import { Product } from 'src/entity/entities/Product';
-import { ProductHasCategoryStandard } from 'src/entity/entities/ProductHasCategoryStandard';
+import { ProductDetail } from 'src/entity/entities/ProductDetail';
+import { Qna } from 'src/entity/entities/Qna';
 import { RelatedProduct } from 'src/entity/entities/RelatedProduct';
+import { Review } from 'src/entity/entities/Review';
+import { User } from 'src/entity/entities/User';
 import { getConnection } from 'typeorm';
 import { CreateCategoryDTO } from './dto/createCategory.dto';
 import { CreateProductDTO } from './dto/createProduct.dto';
 import { InsertDetailImageDTO } from './dto/insertDetailImage.dto';
 import { InsertProductInCategoryDTO } from './dto/insertProductInCategory.dto';
+import { ProductHasCategoryStandard } from 'src/entity/entities/ProductHasCategoryStandard';
 
 //DB와 직접적으로 소통하는 공간
 @Injectable()
 export class ProductService {
+  async findProductQna(product_number: number) {
+    const product_qna = await getConnection()
+      .createQueryBuilder(Qna, 'q')
+      .select()
+      .leftJoinAndSelect(User, 'u', 'q.user_number=u.user_number')
+      .where('product_number=' + product_number)
+      .getRawMany();
+    return product_qna;
+  }
+  async findProductReview(product_number: number) {
+    const product_review = await getConnection()
+      .createQueryBuilder(Review, 'r')
+      .select()
+      .leftJoinAndSelect(User, 'u', 'r.user_number = u.user_number')
+      .where('product_number=' + product_number)
+      .getRawMany();
+    return product_review;
+  }
+  async findOneProductDetail(product_number: number) {
+    const product_detail = await getConnection()
+      .createQueryBuilder()
+      .select()
+      .from(ProductDetail, '')
+      .where('product_number=' + product_number)
+      .getRawOne();
+    return product_detail;
+  }
   async findAllRelatedProduct(product_number: number) {
     const related_product = await getConnection()
       .createQueryBuilder(Product, 'product')
@@ -25,7 +52,7 @@ export class ProductService {
       .innerJoin(
         RelatedProduct,
         'related',
-        'product.product_number = related.related_product_id',
+        'product.product_number = related.related_product_number',
       )
       .where('related.product_number=' + product_number)
       .getRawMany();
@@ -44,14 +71,10 @@ export class ProductService {
   }
   async findProductMaterialAndColor(product_number: number) {
     const materialAndColor = await getConnection()
-      .createQueryBuilder(MappingColorWithMaterial, 'map')
-      .select([
-        'm.material_name as material_name',
-        'c.color_name as color_name',
-      ])
-      .innerJoin(ColorStandard, 'c', 'c.color_id = map.color_id')
-      .innerJoin(MaterialStandard, 'm', 'm.material_id = map.material_id')
-      .where('map.product_number=' + product_number)
+      .createQueryBuilder()
+      .select()
+      .from(ProductMaterialAndColor, '')
+      .where('product_number=' + product_number)
       .getRawMany();
     console.log(materialAndColor);
     return materialAndColor;

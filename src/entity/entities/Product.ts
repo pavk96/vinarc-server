@@ -1,20 +1,18 @@
 import {
   Column,
   Entity,
-  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Cart } from "./Cart";
 import { DetailImage } from "./DetailImage";
 import { Exchange } from "./Exchange";
-import { MappingMaterialWithProduct } from "./MappingMaterialWithProduct";
 import { OrderedProduct } from "./OrderedProduct";
 import { PopularProduct } from "./PopularProduct";
 import { ProductDetail } from "./ProductDetail";
-import { CategoryStandard } from "./CategoryStandard";
+import { ProductHasCategoryStandard } from "./ProductHasCategoryStandard";
 import { ProductHasMainImage } from "./ProductHasMainImage";
+import { ProductMaterialAndColor } from "./ProductMaterialAndColor";
 import { Qna } from "./Qna";
 import { RelatedProduct } from "./RelatedProduct";
 import { Review } from "./Review";
@@ -51,20 +49,11 @@ export class Product {
   @Column("varchar", { name: "product_thumnail_url", length: 45 })
   productThumnailUrl: string;
 
-  @OneToMany(() => Cart, (cart) => cart.productNumber2)
-  carts: Cart[];
-
   @OneToMany(() => DetailImage, (detailImage) => detailImage.productNumber2)
   detailImages: DetailImage[];
 
   @OneToMany(() => Exchange, (exchange) => exchange.productNumber2)
   exchanges: Exchange[];
-
-  @OneToMany(
-    () => MappingMaterialWithProduct,
-    (mappingMaterialWithProduct) => mappingMaterialWithProduct.productNumber2
-  )
-  mappingMaterialWithProducts: MappingMaterialWithProduct[];
 
   @OneToMany(
     () => OrderedProduct,
@@ -84,17 +73,23 @@ export class Product {
   )
   productDetail: ProductDetail;
 
-  @ManyToMany(
-    () => CategoryStandard,
-    (categoryStandard) => categoryStandard.products
+  @OneToMany(
+    () => ProductHasCategoryStandard,
+    (productHasCategoryStandard) => productHasCategoryStandard.productNumber2
   )
-  categoryStandards: CategoryStandard[];
+  productHasCategoryStandards: ProductHasCategoryStandard[];
 
   @OneToMany(
     () => ProductHasMainImage,
     (productHasMainImage) => productHasMainImage.productNumber2
   )
   productHasMainImages: ProductHasMainImage[];
+
+  @OneToMany(
+    () => ProductMaterialAndColor,
+    (productMaterialAndColor) => productMaterialAndColor.productNumber2
+  )
+  productMaterialAndColors: ProductMaterialAndColor[];
 
   @OneToMany(() => Qna, (qna) => qna.productNumber2)
   qnas: Qna[];

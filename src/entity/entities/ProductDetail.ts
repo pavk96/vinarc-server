@@ -43,6 +43,9 @@ export class ProductDetail {
   @Column("date", { name: "estimated_delivery_date", nullable: true })
   estimatedDeliveryDate: string | null;
 
+  @Column("varchar", { name: "product_detail_image_url", length: 45 })
+  productDetailImageUrl: string;
+
   @OneToOne(() => Product, (product) => product.productDetail, {
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
