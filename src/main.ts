@@ -10,5 +10,6 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
   await app.listen(3333);
+  console.log('LISTEN 3333');
 }
 bootstrap();

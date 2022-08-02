@@ -7,6 +7,8 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
   @Post('cart/insert')
   async insertCart(@Body() insertCartDTO: InsertCartDTO, @Req() req: any) {
+    console.log(insertCartDTO);
+
     await this.orderService.insertCart(insertCartDTO);
     return true;
   }

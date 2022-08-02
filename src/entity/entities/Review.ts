@@ -2,8 +2,8 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Product } from "./Product";
 import { User } from "./User";
 
-@Index("fk_product_has_user_product1_idx", ["productNumber"], {})
 @Index("fk_product_has_user_user1_idx", ["userNumber"], {})
+@Index("fk_product_has_user_product1_idx", ["productNumber"], {})
 @Entity("review", { schema: "vinarc" })
 export class Review {
   @Column("int", { primary: true, name: "product_number" })

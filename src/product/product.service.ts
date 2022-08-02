@@ -63,7 +63,7 @@ export class ProductService {
   async findOneProduct(product_number: number) {
     const product = await getConnection()
       .createQueryBuilder(Product, 'product')
-      .leftJoinAndSelect('product.categoryStandards', 'category')
+      .leftJoinAndSelect('product.productHasCategoryStandards', 'category')
       .where('product.product_number=' + product_number)
       .getRawOne();
     console.log(product, 'HIHI');

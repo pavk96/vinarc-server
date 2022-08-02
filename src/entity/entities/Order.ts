@@ -13,8 +13,8 @@ import { UserCoupon } from "./UserCoupon";
 import { OrderedProduct } from "./OrderedProduct";
 import { Refund } from "./Refund";
 
-@Index("fk_order_user_coupon1_idx", ["userCouponId"], {})
 @Index("fk_order_user_idx", ["userNumber"], {})
+@Index("fk_order_user_coupon1_idx", ["userCouponId"], {})
 @Entity("order", { schema: "vinarc" })
 export class Order {
   @PrimaryGeneratedColumn({ type: "int", name: "order_id" })

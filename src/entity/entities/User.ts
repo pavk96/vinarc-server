@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -14,12 +15,13 @@ import { Star } from "./Star";
 import { UserCoupon } from "./UserCoupon";
 import { UserLog } from "./UserLog";
 
+@Index("user_id_UNIQUE", ["userId"], { unique: true })
 @Entity("user", { schema: "vinarc" })
 export class User {
   @PrimaryGeneratedColumn({ type: "int", name: "user_number" })
   userNumber: number;
 
-  @Column("varchar", { name: "user_id", length: 45 })
+  @Column("varchar", { name: "user_id", unique: true, length: 45 })
   userId: string;
 
   @Column("varchar", { name: "user_password", length: 300 })

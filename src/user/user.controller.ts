@@ -133,7 +133,10 @@ export class UserController {
       //회원가입
       res.setHeader('Access-Control-Expose-Headers', '*');
       await this.userService.insertUser(registUserDTO);
-      res.end();
+      res.json({
+        success: true,
+        message: 'success',
+      });
     } catch (error) {
       res.json({
         success: false,
